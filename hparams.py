@@ -11,7 +11,7 @@ data_path = f'{corpus_path}/preprocessed/'
 
 
 # set this to True if you also want to preprocess training data for Tacotron from LJSpeech
-ignore_tts = False
+ignore_tts = True
 
 
 # DSP --------------------------------------------------------------------------------------------------------------#
