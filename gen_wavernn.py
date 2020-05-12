@@ -1,8 +1,11 @@
+
 from utils.dataset import get_vocoder_datasets
 from utils.dsp import *
 from models.fatchord_version import WaveRNN
 from utils.paths import Paths
 from utils.display import simple_table
+
+
 import torch
 import argparse
 from pathlib import Path
@@ -43,12 +46,12 @@ def gen_from_file(model: WaveRNN, load_path: Path, save_path: Path, batched, tar
     suffix = load_path.suffix
     if suffix == ".wav":
         wav = load_wav(load_path)
-        save_wav(wav, save_path/f'__{file_name}__{k}k_steps_target.wav')
+        save_wav(wav, save_path/f'{prefix}{file_name}.target.wav')
         mel = melspectrogram(wav)
     elif suffix == ".npy":
         mel = np.load(load_path)
         if mel.ndim != 2 or mel.shape[0] != hp.num_mels:
-            raise ValueError(f'Expected a numpy array shaped (n_mels, n_hops), but got {wav.shape}!')
+            raise ValueError(f'Expected a numpy array shaped (n_mels, n_hops), but got {mel.shape}!')
         _max = np.max(mel)
         _min = np.min(mel)
         if _max >= 1.01 or _min <= -0.01:
@@ -56,13 +59,15 @@ def gen_from_file(model: WaveRNN, load_path: Path, save_path: Path, batched, tar
     else:
         raise ValueError(f"Expected an extension of .wav or .npy, but got {suffix}!")
 
+    m = torch.tensor(mel).unsqueeze(0)
 
-    mel = torch.tensor(mel).unsqueeze(0)
+    save_str_wavernn = save_path/f'{prefix}{file_name}.wavernn.wav'
+    save_str_griffinlim = save_path/f'{prefix}{file_name}.griffinlim.wav'
 
-    batch_str = f'gen_batched_target{target}_overlap{overlap}' if batched else 'gen_NOT_BATCHED'
-    save_str = save_path/f'__{file_name}__{k}k_steps_{batch_str}.wav'
+    wav = reconstruct_waveform(mel, n_iter=32)
+    save_wav(wav, save_str_griffinlim)
 
-    _ = model.generate(mel, save_str, batched, target, overlap, hp.mu_law)
+    _ = model.generate(m, save_str_wavernn, batched, target, overlap, hp.mu_law)
 
 
 if __name__ == "__main__":
@@ -72,12 +77,14 @@ if __name__ == "__main__":
     parser.add_argument('--unbatched', '-u', dest='batched', action='store_false', help='Slow Unbatched Generation')
     parser.add_argument('--samples', '-s', type=int, help='[int] number of utterances to generate')
     parser.add_argument('--target', '-t', type=int, help='[int] number of samples in each batch index')
-    parser.add_argument('--overlap', '-o', type=int, help='[int] number of crossover samples')
+    parser.add_argument('--overlap', '-v', type=int, help='[int] number of crossover samples')
     parser.add_argument('--file', '-f', type=str, help='[string/path] for testing a wav outside dataset')
     parser.add_argument('--voc_weights', '-w', type=str, help='[string/path] Load in different WaveRNN weights')
     parser.add_argument('--gta', '-g', dest='gta', action='store_true', help='Generate from GTA testset')
     parser.add_argument('--force_cpu', '-c', action='store_true', help='Forces CPU-only training, even when in CUDA capable environment')
     parser.add_argument('--hp_file', metavar='FILE', default='hparams.py', help='The file to use for the hyperparameters')
+    parser.add_argument('--output_dir', '-o', type=str, help='[string/path] output directory for generated audio files')
+    parser.add_argument('--prefix', '-p', type=str, default='', help='file name prefix for generated audio files')
 
     parser.set_defaults(batched=None)
 
@@ -94,6 +101,7 @@ if __name__ == "__main__":
     if args.samples is None:
         args.samples = hp.voc_gen_at_checkpoint
 
+    prefix = args.prefix
     batched = args.batched
     samples = args.samples
     target = args.target
@@ -124,6 +132,11 @@ if __name__ == "__main__":
 
     paths = Paths(hp.data_path, hp.voc_model_id, hp.tts_model_id)
 
+    if args.output_dir is None:
+        args.output_dir = paths.voc_output
+
+    output_dir = Path(args.output_dir)
+
     voc_weights = args.voc_weights if args.voc_weights else paths.voc_latest_weights
 
     model.load(voc_weights)
@@ -134,7 +147,7 @@ if __name__ == "__main__":
 
     if file:
         file = Path(file).expanduser()
-        gen_from_file(model, file, paths.voc_output, batched, target, overlap)
+        gen_from_file(model, file, output_dir, batched, target, overlap)
     else:
         _, test_set = get_vocoder_datasets(paths.data, 1, gta)
         gen_testset(model, test_set, samples, batched, target, overlap, paths.voc_output)
