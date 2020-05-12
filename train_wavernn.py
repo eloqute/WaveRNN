@@ -103,6 +103,10 @@ def voc_train_loop(paths: Paths, model: WaveRNN, loss_func, optimizer, train_set
         running_loss = 0.
 
         for i, (x, y, m) in enumerate(train_set, 1):
+
+            # Bad data in dataset
+            if x is None:
+                continue
             x, m, y = x.to(device), m.to(device), y.to(device)
 
             # Parallelize model onto GPUS using workaround due to python bug
