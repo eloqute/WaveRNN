@@ -2,15 +2,15 @@
 # CONFIG -----------------------------------------------------------------------------------------------------------#
 
 # Here are the input and output data paths (Note: you can override wav_path in preprocess.py)
-wav_path = '/path/to/wav_files/'
-data_path = 'data/'
+experiment = 'exp01'
+corpus = 'StephenFryHarryPotter'
+corpus_path = f'/mnt/d/data/{corpus}'
+wav_path = f'{corpus_path}/unprocessed/'
+data_path = f'{corpus_path}/preprocessed/'
 
-# model ids are separate - that way you can use a new tts with an old wavernn and vice versa
-# NB: expect undefined behaviour if models were trained on different DSP settings
-voc_model_id = 'ljspeech_mol'
-tts_model_id = 'ljspeech_lsa_smooth_attention'
 
-# set this to True if you are only interested in WaveRNN
+
+# set this to True if you also want to preprocess training data for Tacotron from LJSpeech
 ignore_tts = False
 
 
@@ -34,14 +34,19 @@ peak_norm = False                   # Normalise to the peak of each wav file
 # WAVERNN / VOCODER ------------------------------------------------------------------------------------------------#
 
 
+
 # Model Hparams
-voc_mode = 'MOL'                    # either 'RAW' (softmax on raw bits) or 'MOL' (sample from mixture of logistics)
+voc_mode = 'RAW'                    # either 'RAW' (softmax on raw bits) or 'MOL' (sample from mixture of logistics)
 voc_upsample_factors = (5, 5, 11)   # NB - this needs to correctly factorise hop_length
 voc_rnn_dims = 512
 voc_fc_dims = 512
 voc_compute_dims = 128
 voc_res_out_dims = 128
 voc_res_blocks = 10
+
+# model ids are separate - that way you can use a new tts with an old wavernn and vice versa
+# NB: expect undefined behaviour if models were trained on different DSP settings
+voc_model_id = f'{corpus}_{experiment}_{voc_mode}'
 
 # Training
 voc_batch_size = 32
@@ -61,6 +66,9 @@ voc_overlap = 550                   # number of samples for crossfading between 
 
 
 # TACOTRON/TTS -----------------------------------------------------------------------------------------------------#
+# model ids are separate - that way you can use a new tts with an old wavernn and vice versa
+# NB: expect undefined behaviour if models were trained on different DSP settings
+tts_model_id = 'ljspeech_lsa_smooth_attention'
 
 
 # Model Hparams
