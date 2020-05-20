@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.sampler import Sampler
 from utils.dsp import *
-from utils import hparams as hp
+import hparams as hp
 from utils.text import text_to_sequence
 from utils.paths import Paths
 from pathlib import Path
@@ -66,7 +66,9 @@ def get_vocoder_datasets(path: Path, batch_size, train_gta):
 
 def collate_vocoder(batch):
     try:
+
         mel_win = hp.voc_seq_len // hp.hop_length + 2 * hp.voc_pad
+
         max_offsets = [x[0].shape[-1] -2 - (mel_win + 2 * hp.voc_pad) for x in batch]
         mel_offsets = [np.random.randint(0, offset) for offset in max_offsets]
         sig_offsets = [(offset + hp.voc_pad) * hp.hop_length for offset in mel_offsets]

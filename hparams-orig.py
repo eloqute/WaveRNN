@@ -2,11 +2,11 @@
 # CONFIG -----------------------------------------------------------------------------------------------------------#
 
 # Here are the input and output data paths (Note: you can override wav_path in preprocess.py)
-experiment = 'exp02'
+experiment = 'exp01'
 corpus = 'StephenFryHarryPotter'
 corpus_path = f'/mnt/d/data/{corpus}'
 wav_path = f'{corpus_path}/unprocessed/'
-data_path = f'{corpus_path}/preprocessed-small-win/'
+data_path = f'{corpus_path}/preprocessed/'
 
 
 
@@ -21,9 +21,9 @@ sample_rate = 22050
 n_fft = 2048
 fft_bins = n_fft // 2 + 1
 num_mels = 80
-hop_length = 256                    # 12.5ms - in line with Tacotron 2 paper
-win_length = 512                   # 50ms - same reason as above
-fmin = 80
+hop_length = 275                    # 12.5ms - in line with Tacotron 2 paper
+win_length = 1100                   # 50ms - same reason as above
+fmin = 40
 min_level_db = -100
 ref_level_db = 20
 bits = 9                            # bit depth of signal
@@ -37,7 +37,7 @@ peak_norm = False                   # Normalise to the peak of each wav file
 
 # Model Hparams
 voc_mode = 'RAW'                    # either 'RAW' (softmax on raw bits) or 'MOL' (sample from mixture of logistics)
-voc_upsample_factors = (4, 8, 8)   # NB - this needs to correctly factorise hop_length
+voc_upsample_factors = (5, 5, 11)   # NB - this needs to correctly factorise hop_length
 voc_rnn_dims = 512
 voc_fc_dims = 512
 voc_compute_dims = 128
@@ -56,7 +56,7 @@ voc_gen_at_checkpoint = 5           # number of samples to generate at each chec
 voc_total_steps = 1_000_000         # Total number of training steps
 voc_test_samples = 50               # How many unseen samples to put aside for testing
 voc_pad = 2                         # this will pad the input so that the resnet can 'see' wider than input length
-voc_seq_len = hop_length * 8        # must be a multiple of hop_length
+voc_seq_len = hop_length * 5        # must be a multiple of hop_length
 voc_clip_grad_norm = 4              # set to None if no gradient clipping needed
 
 # Generating / Synthesizing
