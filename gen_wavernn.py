@@ -113,6 +113,7 @@ if __name__ == "__main__":
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
+
     print('Using device:', device)
 
     print('\nInitialising Model...\n')

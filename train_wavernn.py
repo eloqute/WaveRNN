@@ -123,14 +123,13 @@ def voc_train_loop(paths: Paths, model: WaveRNN, loss_func, optimizer, train_set
 
             y = y.unsqueeze(-1)
 
-
             loss = loss_func(y_hat, y)
 
             optimizer.zero_grad()
             loss.backward()
             if hp.voc_clip_grad_norm is not None:
                 grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), hp.voc_clip_grad_norm)
-                if np.isnan(grad_norm):
+                if np.isnan(grad_norm.cpu()):
                     print('grad_norm was NaN!')
             optimizer.step()
 

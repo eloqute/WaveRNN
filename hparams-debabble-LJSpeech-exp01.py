@@ -5,8 +5,8 @@
 experiment = 'exp01'
 corpus = 'debabble/LJSpeech'
 corpus_path = f'/mnt/data/{corpus}'
-wav_path = f'{corpus_path}/unprocessed/noisy'
-data_path = f'{corpus_path}/preprocessed/noisy'
+wav_path = f'{corpus_path}/unprocessed/outputs'
+data_path = f'{corpus_path}/preprocessed/output_x_clean_y'
 
 
 
@@ -102,4 +102,5 @@ tts_checkpoint_every = 2_000        # checkpoints the model every X steps
 
 
 # ------------------------------------------------------------------------------------------------------------------#
+
 

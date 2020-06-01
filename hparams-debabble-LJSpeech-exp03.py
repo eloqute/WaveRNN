@@ -2,11 +2,11 @@
 # CONFIG -----------------------------------------------------------------------------------------------------------#
 
 # Here are the input and output data paths (Note: you can override wav_path in preprocess.py)
-experiment = 'exp01'
+experiment = 'exp03'
 corpus = 'debabble/LJSpeech'
 corpus_path = f'/mnt/data/{corpus}'
-wav_path = f'{corpus_path}/unprocessed/noisy'
-data_path = f'{corpus_path}/preprocessed/noisy'
+wav_path = f'{corpus_path}/unprocessed/noisy_x_clean_y'
+data_path = f'{corpus_path}/preprocessed/noisy_x_clean_y'
 
 
 
@@ -102,4 +102,5 @@ tts_checkpoint_every = 2_000        # checkpoints the model every X steps
 
 
 # ------------------------------------------------------------------------------------------------------------------#
+
 
