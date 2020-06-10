@@ -2,12 +2,13 @@
 # CONFIG -----------------------------------------------------------------------------------------------------------#
 
 # Here are the input and output data paths (Note: you can override wav_path in preprocess.py)
-#Train with debabble LJSpeech output against clean target using voc mode of MOL
+#Train with debabble clean input against clean target using voc mode of MOL
+voc_mode = 'MOL'                    # either 'RAW' (softmax on raw bits) or 'MOL' (sample from mixture of logistics)
 experiment = 'exp02'
 corpus = 'debabble/LJSpeech'
 corpus_path = f'/mnt/data/{corpus}'
-wav_path = f'{corpus_path}/unprocessed/outputs'
-data_path = f'{corpus_path}/preprocessed/output_x_clean_y'
+wav_path = f'{corpus_path}/unprocessed/clean'
+data_path = f'{corpus_path}/preprocessed/clean/{voc_mode}'
 
 
 
@@ -37,7 +38,6 @@ peak_norm = False                   # Normalise to the peak of each wav file
 
 
 # Model Hparams
-voc_mode = 'MOL'                    # either 'RAW' (softmax on raw bits) or 'MOL' (sample from mixture of logistics)
 voc_upsample_factors = (5, 5, 11)   # NB - this needs to correctly factorise hop_length
 voc_rnn_dims = 512
 voc_fc_dims = 512
