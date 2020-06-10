@@ -148,11 +148,11 @@ if __name__ == "__main__":
                   ('Overlap Samples', overlap if batched else 'N/A')])
 
     if file:
+        file = Path(file).expanduser()
         if file.endswith('/'):
             for i, f in enumerate(tqdm(file)):
                 gen_from_file(model, file, output_dir, batched, target, overlap)
         else:
-            file = Path(file).expanduser()
             gen_from_file(model, file, output_dir, batched, target, overlap)
     else:
         _, test_set = get_vocoder_datasets(paths.data, 1, gta)
